@@ -44,7 +44,7 @@ export default {
     }
   },
   mounted () {
-    this.needScroll()
+    this.needScroll();
   },
   methods: {
     adjustFooter: function(count){
@@ -132,4 +132,3 @@ export default {
 }
 
 </style>
- 

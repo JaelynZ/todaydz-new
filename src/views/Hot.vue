@@ -8,10 +8,8 @@
 
 <script>
 
-import Tab from './Tab';
-import Good from './Good';
-
-const appKeyList = ['6QEk2qJf','9fe0uxMq','CXzMWdzR'];
+import Tab from '../components/Tab';
+import Good from '../components/Good';
 
 export default {
 	name: 'hot',
@@ -28,21 +26,28 @@ export default {
 	},
 	methods:{
 		loadGoodData: function(){
-			let me = this;
-			let param = me.param;
+			let self = this;
+			let param = self.param;
 
 			let index = Math.floor(Math.random() * 3);
-			let appKey = appKeyList[index];
+			let appKey = process.env.VUE_APP_APPkEY.split(",")[index];
 
-			me.apiUrl = "/apis/baokuan?app_key="+ appKey +"&v=1.0&cat=" + param.cat;
+			self.apiUrl = "/apis/baokuan?app_key="+ appKey +"&v=1.0&cat=" + param.cat;
+ 
+	        this.$axios.get(self.apiUrl)
+			.then(function(response) {
+	        	return response.data;
+	        }).then(function(data) {
+	        	self.goods = data.data;
+	        });  
 
-	        fetch(me.apiUrl)
+	        /*fetch(self.apiUrl)
 	        .then(function(response) {
 	        	// console.log(response);
 	        	return response.json();
 	        }).then(function(data) {
-	        	me.goods = data.data;
-	        });    
+	        	self.goods = data.data;
+	        }); */ 
 		},
 		changeTab: function(cParam) {
 	    	this.param = cParam;

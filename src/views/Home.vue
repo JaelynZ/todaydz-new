@@ -12,12 +12,10 @@
 
 <script>
 
-import Tab from './Tab';
-import Condition from './Condition';
-import Good from './Good';
-import Paging from './Paging';
-
-const appKeyList = ['6QEk2qJf','9fe0uxMq','CXzMWdzR'];
+import Tab from '../components/Tab';
+import Condition from '../components/Condition';
+import Good from '../components/Good';
+import Paging from '../components/Paging';
 
 export default {
 	name: 'home',
@@ -38,42 +36,62 @@ export default {
 	},
 	methods:{
 		loadGoodData: function(){
-			let me = this;
-			let param = me.param;
+			let self = this;
+			let param = self.param;
 
 			let index = Math.floor(Math.random() * 3);
-			let appKey = appKeyList[index];
+			let appKey = process.env.VUE_APP_APPkEY.split(",")[index];
 
-			if (me.currentCheckApiType == 'goodList') {
-				me.apiUrl = "/apis/qingsoulist?&app_key="+ appKey +"&v=1.0&sort=" + param.sort + "&page=" + param.page + "&page_size=" + param.page_size +
+			if (self.currentCheckApiType == 'goodList') {
+				self.apiUrl = "/apis/qingsoulist?&app_key="+ appKey +"&v=1.0&sort=" + param.sort + "&page=" + param.page + "&page_size=" + param.page_size +
 					"&cat=" + param.cat + "&min_price=" + param.min_price + "&max_price=" + param.max_price + "&new=" + param.is_new +
 					"&is_ju=" + param.is_ju + "&is_tqg=" + param.is_tqg + "&is_ali=0";
-			} else if (me.currentCheckApiType == 'goodSearch') {
-				me.apiUrl = "/apis/search?app_key="+ appKey +"&v=1.0&s_type=1&key_word=" + param.searchWord + "&page=" + param.page + "&cat=" + param.cat +
+			} else if (self.currentCheckApiType == 'goodSearch') {
+				self.apiUrl = "/apis/search?app_key="+ appKey +"&v=1.0&s_type=1&key_word=" + param.searchWord + "&page=" + param.page + "&cat=" + param.cat +
 					"&min_price=" + param.min_price + "&max_price=" + param.max_price + "&sort=" + param.sort +
 					"&new=" + param.is_new + "&is_ju=" + param.is_ju + "&is_tqg=" + param.is_tqg + "&is_ali=0";
 			}
 
-	        fetch(me.apiUrl)
-	        .then(function(response) {
-	        	// console.log(response);
-	        	return response.json();
-	        }).then(function(data) {
+			this.$axios.get(self.apiUrl)
+			.then(function(response) {
+				return response.data;
+			})
+			.then(function(data) {
 	        	if(data.data.total == 0){
-					me.$ckq.layer({
+					self.$ckq.layer({
 			          message: '查无此相关数据',
 			          time: 3000
 			        })
 					return;
 	        	}
-	        	me.goods = data.data.list;
-	        	me.total = Math.round(data.data.total / param.page_size);
-	        	if(me.total > 600){
-	        		me.total = 600;
+	        	self.goods = data.data.list;
+	        	self.total = Math.round(data.data.total / param.page_size);
+	        	if(self.total > 600){
+	        		self.total = 600;
 	        	}
 	        	//根据页面数据调整Footer
-	        	me.$emit('onAdjustFooter', data.data.list.length);
-	        });    
+	        	self.$emit('onAdjustFooter', data.data.list.length);
+	        }); 
+	        /*fetch(self.apiUrl)
+	        .then(function(response) {
+	        	// console.log(response);
+	        	return response.json();
+	        }).then(function(data) {
+	        	if(data.data.total == 0){
+					self.$ckq.layer({
+			          message: '查无此相关数据',
+			          time: 3000
+			        })
+					return;
+	        	}
+	        	self.goods = data.data.list;
+	        	self.total = Math.round(data.data.total / param.page_size);
+	        	if(self.total > 600){
+	        		self.total = 600;
+	        	}
+	        	//根据页面数据调整Footer
+	        	self.$emit('onAdjustFooter', data.data.list.length);
+	        }); */   
 		},
 		changePaging: function(cPage) {
 	      //这里是页码变化后要做的事
